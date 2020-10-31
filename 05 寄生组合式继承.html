@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+    // 定义父类
+    function People(name, age, sex) {
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+    }
+
+    // 方法写在原型中
+    People.prototype.getName = function() {
+        console.log(this.name);
+    }
+
+    People.prototype.getAge = function() {
+        console.log(this.age);
+    }
+
+    People.prototype.getSex = function() {
+        console.log(this.sex);
+    }
+
+    // 寄生组合式: 寄生式继承 + 构造函数式继承的组合体
+
+    // 子类
+    function Student(name, age, sex, grade) {
+        // 使用构造函数式继承
+        People.apply(this, arguments);
+        // 子类特有的属性放到下面单独定义 
+        this.grade = grade;
+    }
+
+
+    // 寄生式继承的实现: 首先定义一个寄生函数，接收两个参数，一个是父类，一个是子类，在该寄生函数中定义另外一个类
+    // 让寄生类的原型指向父类的原型， 让子类的原型指向寄生实例化对象, 补回子类的constructor属性
+    function jisheng(parent, child) {
+        // 定义寄生类
+        var F = function() {
+            // 补回子类的constructor属性
+            this.constructor = child;
+        }
+        // 寄生类的原型指向父类的原型
+        F.prototype = parent.prototype;
+
+        // 让子类的原型指向寄生实例化对象
+        child.prototype = new F();
+        // 补回子类的constructor属性
+        // child.prototype.constructor = child;
+        // 返回子类
+        return child;
+    }
+
+    // 调用寄生函数
+    jisheng(People, Student);
+
+
+    // 实例化父类
+    var laowang = new People('laowang', 40, '男');
+    // 实例化对象
+    var xiaowang = new Student('xiaowang', 12, '男', 6);
+    console.log(xiaowang);
+
+    // 检测xiaowang 是否是 Student的实例
+    console.log(xiaowang instanceof Student);
+    console.log(xiaowang instanceof People);
+    </script>
+</body>
+</html>
+ 
